@@ -4,6 +4,8 @@ import { appJwtSecret } from 'src/app-constants';
 import { DataModule } from 'src/data/data.module';
 import { AuthService } from './auth/auth.service';
 import { AuthServiceImpl } from './auth/auth.service.impl';
+import { RoleService } from './role/role.service';
+import { RoleServiceImpl } from './role/role.service.impl';
 import { TodoService } from './todo/todo.service';
 import { TodoServiceImpl } from './todo/todo.service.impl';
 
@@ -12,7 +14,7 @@ import { TodoServiceImpl } from './todo/todo.service.impl';
     DataModule,
     JwtModule.register({
       secret: appJwtSecret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: {},
     }),
   ],
   providers: [
@@ -24,7 +26,11 @@ import { TodoServiceImpl } from './todo/todo.service.impl';
       provide: AuthService,
       useClass: AuthServiceImpl,
     },
+    {
+      provide: RoleService,
+      useClass: RoleServiceImpl,
+    },
   ],
-  exports: [TodoService, AuthService],
+  exports: [TodoService, AuthService, RoleService],
 })
 export class ServiceModule {}

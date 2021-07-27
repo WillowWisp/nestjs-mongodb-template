@@ -1,38 +1,55 @@
+import { HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Role, RoleDocument } from 'src/data/schemas/role.schema';
 import { User, UserDocument } from 'src/data/schemas/user.schema';
+import { RoleDto } from 'src/dtos/role/role.dto';
+import { RegisterUserDto } from 'src/dtos/user/register-user.dto';
 import { UserDto } from 'src/dtos/user/user.dto';
 import { UserRepository } from './user.repository';
 
 export class UserRepositoryImpl implements UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  users = [
-    {
-      username: 'hello',
-      password: 'world',
-    },
-  ];
+  async registerUser(
+    registerUserDto: RegisterUserDto,
+    defaultRole: RoleDocument,
+  ): Promise<UserDto> {
+    const foundUserDoc = await this.userModel.findOne({
+      username: registerUserDto.username,
+    });
+
+    if (foundUserDoc != null) {
+      throw new HttpException('Username already taken', 400);
+    }
+
+    const createdUserDoc = await this.userModel.create(
+      registerUserDto.toEntity(defaultRole),
+    );
+
+    return UserDto.fromDocument(createdUserDoc, defaultRole);
+  }
 
   async validateUser(
     username: string,
     password: string,
   ): Promise<UserDto | null> {
-    // const userDoc = await this.userModel.findOne({ username: username });
+    const roleKey: keyof UserDocument = 'role';
 
-    // if (userDoc == null) {
-    //   return null;
-    // }
+    const userDoc = await this.userModel
+      .findOne({ username: username })
+      .populate(roleKey);
 
-    // if (userDoc.password !== password) {
-    //   return null;
-    // }
+    if (userDoc == null) {
+      return null;
+    }
 
-    // return UserDto.fromDocument(userDoc);
+    if (userDoc.password !== password) {
+      return null;
+    }
 
-    return new UserDto({
-      id: '123123',
-      ...this.users[0],
-    });
+    console.log(userDoc.role);
+
+    return UserDto.fromDocument(userDoc, userDoc.role as RoleDocument);
   }
 }
