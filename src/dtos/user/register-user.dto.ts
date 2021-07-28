@@ -6,11 +6,11 @@ export class RegisterUserDto {
   username: string;
   password: string;
 
-  toEntity(defaultRole: RoleDocument): User {
+  toEntity(other: { roleId: RoleDocument['_id'] }): User {
     return {
       username: this.username,
       password: this.password,
-      role: defaultRole,
+      role: other.roleId,
     };
   }
 }

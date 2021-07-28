@@ -1,9 +1,9 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RoleRepository } from 'src/data/repositories/role/role.repository';
 import { UserRepository } from 'src/data/repositories/user/user.repository';
 import { RegisterUserDto } from 'src/dtos/user/register-user.dto';
-import { UserDto } from 'src/dtos/user/user.dto';
+import { ShortUserDto, UserDto } from 'src/dtos/user/user.dto';
 import { AuthService } from './auth.service';
 
 export class AuthServiceImpl implements AuthService {
@@ -13,21 +13,56 @@ export class AuthServiceImpl implements AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async getUserByUsername(username: string): Promise<UserDto> {
+    const userDoc = await this.userRepository.getUserByUsername(username);
+
+    if (userDoc == null) {
+      throw new HttpException('User not found', 404);
+    }
+
+    return UserDto.fromDocument(userDoc);
+  }
+
   async validateUser(
     username: string,
     password: string,
   ): Promise<UserDto | null> {
-    return await this.userRepository.validateUser(username, password);
-  }
+    const userDoc = await this.userRepository.getUserByUsername(username);
 
-  async login(user: any): Promise<{ accessToken: string }> {
-    const payload = { username: user.username, sub: user.id };
-    const accessToken = this.jwtService.sign(payload);
-    return { accessToken };
+    if (userDoc == null) {
+      return null;
+    }
+
+    if (userDoc.password !== password) {
+      return null;
+    }
+
+    return UserDto.fromDocument(userDoc);
   }
 
   async signUp(registerUserDto: RegisterUserDto): Promise<UserDto> {
-    const defaultRole = await this.roleRepository.getDefaultRole();
-    return await this.userRepository.registerUser(registerUserDto, defaultRole);
+    const defaultRoleDoc = await this.roleRepository.getDefaultRole();
+
+    const existUserDoc = await this.userRepository.getUserByUsername(
+      registerUserDto.username,
+    );
+
+    if (existUserDoc != null) {
+      throw new HttpException('Username already taken', 400);
+    }
+
+    const createdUserDoc = await this.userRepository.createUser({
+      username: registerUserDto.username,
+      password: registerUserDto.password,
+      roleObjId: defaultRoleDoc._id,
+    });
+
+    return UserDto.fromDocument(createdUserDoc);
+  }
+
+  async login(user: ShortUserDto): Promise<{ accessToken: string }> {
+    const payload = { username: user.username, sub: user.id };
+    const accessToken = this.jwtService.sign(payload);
+    return { accessToken };
   }
 }

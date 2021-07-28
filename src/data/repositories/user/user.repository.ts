@@ -1,18 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Role, RoleDocument } from 'src/data/schemas/role.schema';
-import { RoleDto } from 'src/dtos/role/role.dto';
-import { RegisterUserDto } from 'src/dtos/user/register-user.dto';
-import { UserDto } from 'src/dtos/user/user.dto';
+import { RoleDocument } from 'src/data/schemas/role.schema';
+import { UserDocument } from 'src/data/schemas/user.schema';
 
 @Injectable()
 export abstract class UserRepository {
-  abstract registerUser(
-    registerUserDto: RegisterUserDto,
-    defaultRole: RoleDocument,
-  ): Promise<UserDto>;
-
-  abstract validateUser(
-    username: string,
-    password: string,
-  ): Promise<UserDto | null>;
+  abstract getUserByUsername(username: string): Promise<UserDocument | null>;
+  abstract createUser(args: {
+    username: string;
+    password: string;
+    roleObjId: RoleDocument['_id'];
+  }): Promise<UserDocument>;
 }
