@@ -1,8 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { RoleDocument } from 'src/data/schemas/role.schema';
 
 export class RoleDto {
-  id?: string;
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   isDefault: boolean;
 
   static fromDocument(document: RoleDocument) {

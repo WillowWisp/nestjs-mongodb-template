@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { LoginResponseDto } from 'src/common/dtos/user/login-response.dto';
 import { RegisterUserDto } from 'src/common/dtos/user/register-user.dto';
 import { ShortUserDto, UserDto } from 'src/common/dtos/user/user.dto';
 
@@ -13,7 +14,5 @@ export abstract class AuthService {
 
   abstract signUp(registerUserDto: RegisterUserDto): Promise<UserDto>;
 
-  abstract login(user: ShortUserDto): Promise<{
-    accessToken: string;
-  }>;
+  abstract login(user: ShortUserDto): Promise<LoginResponseDto>;
 }

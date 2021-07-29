@@ -9,24 +9,33 @@ import { ShortUserDto } from 'src/common/dtos/user/user.dto';
 import { AppUser } from '../decorators/app-user.decorator';
 import { AppRoles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller('todos')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@AppRoles('user')
+@ApiTags('Todos')
+@ApiBearerAuth()
 export class TodoController {
   constructor(@Inject(TodoService) private todoService: TodoService) {}
 
   @Get()
-  async getTodoList(): Promise<TodoDto[]> {
-    return await this.todoService.getTodoList();
+  @ApiOkResponse({ type: [TodoDto] })
+  async getTodoList(@AppUser() user: ShortUserDto): Promise<TodoDto[]> {
+    return await this.todoService.getTodoList(user.id);
   }
 
   @Get(':id')
-  async getTodoById(@Param('id') id: string): Promise<TodoDto | null> {
-    return await this.todoService.getTodoById(id);
+  @ApiOkResponse({ type: TodoDto })
+  async getTodoById(
+    @Param('id') id: string,
+    @AppUser() user: ShortUserDto,
+  ): Promise<TodoDto | null> {
+    return await this.todoService.getTodoById(id, user.id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @AppRoles('admin')
+  @ApiOkResponse({ type: TodoDto })
   async createTodo(
     @AppUser() user: ShortUserDto,
     @Body() writeDto: WriteTodoDto,
@@ -35,7 +44,7 @@ export class TodoController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: TodoDto })
   async updateTodo(
     @AppUser() user: ShortUserDto,
     @Param('id') id: string,

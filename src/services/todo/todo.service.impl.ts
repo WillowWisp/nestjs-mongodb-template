@@ -7,13 +7,13 @@ import { TodoService } from './todo.service';
 export class TodoServiceImpl implements TodoService {
   constructor(@Inject(TodoRepository) private todoRepository: TodoRepository) {}
 
-  async getTodoList(): Promise<TodoDto[]> {
-    const todoDocList = await this.todoRepository.getTodoList();
+  async getTodoList(userId: string): Promise<TodoDto[]> {
+    const todoDocList = await this.todoRepository.getTodoList(userId);
     return todoDocList.map((doc) => TodoDto.fromDocument(doc));
   }
 
-  async getTodoById(id: string): Promise<TodoDto | null> {
-    const todoDoc = await this.todoRepository.getTodoById(id);
+  async getTodoById(id: string, userId: string): Promise<TodoDto | null> {
+    const todoDoc = await this.todoRepository.getTodoById(id, userId);
     return todoDoc ? TodoDto.fromDocument(todoDoc) : null;
   }
 

@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { TodoDto } from 'src/common/dtos/todo/todo.dto';
 import { Todo, TodoDocument } from 'src/data/schemas/todo.schema';
 import { TodoRepository } from './todo.repository';
@@ -13,12 +13,24 @@ export class TodoRepositoryImpl implements TodoRepository {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async getTodoList(): Promise<TodoDocument[]> {
-    return await this.todoModel.find();
+  async getTodoList(userId: string): Promise<TodoDocument[]> {
+    const userDoc = await this.userModel.findById(userId);
+
+    return await this.todoModel.find({ user: userDoc });
   }
 
-  async getTodoById(id: string): Promise<TodoDocument | null> {
-    return await this.todoModel.findById(id);
+  async getTodoById(id: string, userId: string): Promise<TodoDocument | null> {
+    const todoDoc = await this.todoModel.findById(id);
+
+    if (todoDoc == null) {
+      return null;
+    }
+
+    if (todoDoc.user?.id !== userId) {
+      return null;
+    }
+
+    return todoDoc;
   }
 
   async createTodo(

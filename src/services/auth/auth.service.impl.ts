@@ -6,6 +6,7 @@ import { RegisterUserDto } from 'src/common/dtos/user/register-user.dto';
 import { ShortUserDto, UserDto } from 'src/common/dtos/user/user.dto';
 import { AuthService } from './auth.service';
 import * as bcrypt from 'bcrypt';
+import { LoginResponseDto } from 'src/common/dtos/user/login-response.dto';
 
 const SALT_ROUNDS = 10;
 
@@ -64,7 +65,7 @@ export class AuthServiceImpl implements AuthService {
     return UserDto.fromDocument(createdUserDoc);
   }
 
-  async login(user: ShortUserDto): Promise<{ accessToken: string }> {
+  async login(user: ShortUserDto): Promise<LoginResponseDto> {
     const payload = { username: user.username, sub: user.id };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };

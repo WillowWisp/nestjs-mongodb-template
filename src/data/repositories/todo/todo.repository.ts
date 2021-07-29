@@ -5,8 +5,12 @@ import { TodoDocument } from 'src/data/schemas/todo.schema';
 
 @Injectable()
 export abstract class TodoRepository {
-  abstract getTodoList(): Promise<TodoDocument[]>;
-  abstract getTodoById(id: string): Promise<TodoDocument | null>;
+  abstract getTodoList(userId: string): Promise<TodoDocument[]>;
+
+  abstract getTodoById(
+    id: string,
+    userId: string,
+  ): Promise<TodoDocument | null>;
 
   abstract createTodo(
     writeDto: WriteTodoDto,
