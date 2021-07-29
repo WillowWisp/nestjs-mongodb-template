@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { WriteTodoDto } from 'src/dtos/todo/write-todo.dto';
-import { TodoDto } from 'src/dtos/todo/todo.dto';
+import { WriteTodoDto } from 'src/common/dtos/todo/write-todo.dto';
+import { TodoDto } from 'src/common/dtos/todo/todo.dto';
+import { TodoDocument } from 'src/data/schemas/todo.schema';
 
 @Injectable()
 export abstract class TodoRepository {
-  abstract getTodoList(): Promise<TodoDto[]>;
-  abstract getTodoById(id: string): Promise<TodoDto | null>;
-  abstract createTodo(writeDto: WriteTodoDto): Promise<TodoDto>;
+  abstract getTodoList(): Promise<TodoDocument[]>;
+  abstract getTodoById(id: string): Promise<TodoDocument | null>;
+
+  abstract createTodo(
+    writeDto: WriteTodoDto,
+    userId: string,
+  ): Promise<TodoDocument>;
+
   abstract updateTodo(
     id: string,
     writeDto: WriteTodoDto,
-  ): Promise<TodoDto | null>;
+    userId: string,
+  ): Promise<TodoDocument | null>;
 }

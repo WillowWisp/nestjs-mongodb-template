@@ -1,6 +1,6 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RoleDocument } from 'src/data/schemas/role.schema';
+import { Role } from 'src/common/enums/role.enum';
 import { User, UserDocument } from 'src/data/schemas/user.schema';
 import { UserRepository } from './user.repository';
 
@@ -14,12 +14,12 @@ export class UserRepositoryImpl implements UserRepository {
   async createUser(args: {
     username: string;
     password: string;
-    roleObjId: RoleDocument['_id'];
+    role: Role;
   }): Promise<UserDocument> {
     const createdUserDoc = await this.userModel.create({
       username: args.username,
       password: args.password,
-      role: args.roleObjId,
+      role: args.role,
     });
 
     return createdUserDoc;

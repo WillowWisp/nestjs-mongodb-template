@@ -1,40 +1,59 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TodoDto } from 'src/dtos/todo/todo.dto';
+import { TodoDto } from 'src/common/dtos/todo/todo.dto';
 import { Todo, TodoDocument } from 'src/data/schemas/todo.schema';
 import { TodoRepository } from './todo.repository';
-import { WriteTodoDto } from 'src/dtos/todo/write-todo.dto';
+import { WriteTodoDto } from 'src/common/dtos/todo/write-todo.dto';
+import { User, UserDocument } from 'src/data/schemas/user.schema';
+import { HttpException } from '@nestjs/common';
 
 export class TodoRepositoryImpl implements TodoRepository {
-  constructor(@InjectModel(Todo.name) private todoModel: Model<TodoDocument>) {}
+  constructor(
+    @InjectModel(Todo.name) private todoModel: Model<TodoDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+  ) {}
 
-  async getTodoList(): Promise<TodoDto[]> {
-    const todoDocList = await this.todoModel.find();
-    return todoDocList.map((doc) => TodoDto.fromDocument(doc));
+  async getTodoList(): Promise<TodoDocument[]> {
+    return await this.todoModel.find();
   }
 
-  async getTodoById(id: string): Promise<TodoDto | null> {
-    const todoDoc = await this.todoModel.findById(id);
+  async getTodoById(id: string): Promise<TodoDocument | null> {
+    return await this.todoModel.findById(id);
+  }
 
-    if (todoDoc == null) {
-      return null;
+  async createTodo(
+    writeDto: WriteTodoDto,
+    userId: string,
+  ): Promise<TodoDocument> {
+    const userDoc = await this.userModel.findById(userId);
+
+    if (userDoc == null) {
+      throw new HttpException('User not found', 500);
     }
 
-    return TodoDto.fromDocument(todoDoc);
-  }
-
-  async createTodo(writeDto: WriteTodoDto): Promise<TodoDto> {
-    const createdDoc = await this.todoModel.create(writeDto.toEntity());
-    return TodoDto.fromDocument(createdDoc);
+    return await this.todoModel.create({
+      name: writeDto.name,
+      user: userDoc._id,
+    });
   }
 
   async updateTodo(
     id: string,
     writeDto: WriteTodoDto,
-  ): Promise<TodoDto | null> {
+    userId: string,
+  ): Promise<TodoDocument | null> {
+    const userDoc = await this.userModel.findById(userId);
+
+    if (userDoc == null) {
+      throw new HttpException('User not found', 500);
+    }
+
     const updatedDoc = await this.todoModel.findByIdAndUpdate(
       id,
-      writeDto.toEntity(),
+      {
+        name: writeDto.name,
+        user: userDoc._id,
+      },
       { new: true },
     );
 
@@ -42,6 +61,6 @@ export class TodoRepositoryImpl implements TodoRepository {
       return null;
     }
 
-    return TodoDto.fromDocument(updatedDoc);
+    return updatedDoc;
   }
 }

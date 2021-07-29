@@ -1,9 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RoleDto } from 'src/dtos/role/role.dto';
+import { RoleDto } from 'src/common/dtos/role/role.dto';
 import { Role, RoleDocument } from 'src/data/schemas/role.schema';
 import { RoleRepository } from './role.repository';
-import { CreateRoleDto } from 'src/dtos/role/create-role.dto';
+import { CreateRoleDto } from 'src/common/dtos/role/create-role.dto';
 import { HttpException } from '@nestjs/common';
 
 export class RoleRepositoryImpl implements RoleRepository {

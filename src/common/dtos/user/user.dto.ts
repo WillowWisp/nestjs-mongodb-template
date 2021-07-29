@@ -1,5 +1,5 @@
+import { Role } from 'src/common/enums/role.enum';
 import { UserDocument } from 'src/data/schemas/user.schema';
-import { RoleDto } from '../role/role.dto';
 
 export class ShortUserDto {
   id: string;
@@ -9,13 +9,13 @@ export class ShortUserDto {
 export class UserDto {
   id: string;
   username: string;
-  role: RoleDto | null;
+  role: Role;
 
-  static async fromDocument(document: UserDocument): Promise<UserDto> {
+  static fromDocument(document: UserDocument): UserDto {
     return {
       id: document.id,
       username: document.username,
-      role: !document.role ? null : RoleDto.fromDocument(document.role),
+      role: document.role,
     };
   }
 }

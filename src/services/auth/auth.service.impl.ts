@@ -2,8 +2,8 @@ import { HttpException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RoleRepository } from 'src/data/repositories/role/role.repository';
 import { UserRepository } from 'src/data/repositories/user/user.repository';
-import { RegisterUserDto } from 'src/dtos/user/register-user.dto';
-import { ShortUserDto, UserDto } from 'src/dtos/user/user.dto';
+import { RegisterUserDto } from 'src/common/dtos/user/register-user.dto';
+import { ShortUserDto, UserDto } from 'src/common/dtos/user/user.dto';
 import { AuthService } from './auth.service';
 
 export class AuthServiceImpl implements AuthService {
@@ -41,8 +41,6 @@ export class AuthServiceImpl implements AuthService {
   }
 
   async signUp(registerUserDto: RegisterUserDto): Promise<UserDto> {
-    const defaultRoleDoc = await this.roleRepository.getDefaultRole();
-
     const existUserDoc = await this.userRepository.getUserByUsername(
       registerUserDto.username,
     );
@@ -54,7 +52,7 @@ export class AuthServiceImpl implements AuthService {
     const createdUserDoc = await this.userRepository.createUser({
       username: registerUserDto.username,
       password: registerUserDto.password,
-      roleObjId: defaultRoleDoc._id,
+      role: 'user',
     });
 
     return UserDto.fromDocument(createdUserDoc);

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RoleDocument } from 'src/data/schemas/role.schema';
+import { Role } from 'src/common/enums/role.enum';
 import { UserDocument } from 'src/data/schemas/user.schema';
 
 @Injectable()
@@ -8,6 +8,6 @@ export abstract class UserRepository {
   abstract createUser(args: {
     username: string;
     password: string;
-    roleObjId: RoleDocument['_id'];
+    role: Role;
   }): Promise<UserDocument>;
 }

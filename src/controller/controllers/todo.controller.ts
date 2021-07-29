@@ -1,9 +1,14 @@
-import { Inject } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { WriteTodoDto } from 'src/dtos/todo/write-todo.dto';
-import { TodoDto } from 'src/dtos/todo/todo.dto';
+import { WriteTodoDto } from 'src/common/dtos/todo/write-todo.dto';
+import { TodoDto } from 'src/common/dtos/todo/todo.dto';
 import { TodoService } from 'src/services/todo/todo.service';
 import { Put } from '@nestjs/common';
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { ShortUserDto } from 'src/common/dtos/user/user.dto';
+import { AppUser } from '../decorators/app-user.decorator';
+import { AppRoles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../guards/roles.guard';
 
 @Controller('todos')
 export class TodoController {
@@ -20,15 +25,22 @@ export class TodoController {
   }
 
   @Post()
-  async createTodo(@Body() writeDto: WriteTodoDto): Promise<TodoDto> {
-    return await this.todoService.createTodo(writeDto);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @AppRoles('admin')
+  async createTodo(
+    @AppUser() user: ShortUserDto,
+    @Body() writeDto: WriteTodoDto,
+  ): Promise<TodoDto> {
+    return await this.todoService.createTodo(writeDto, user.id);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   async updateTodo(
+    @AppUser() user: ShortUserDto,
     @Param('id') id: string,
     @Body() writeDto: WriteTodoDto,
   ): Promise<TodoDto | null> {
-    return await this.todoService.updateTodo(id, writeDto);
+    return await this.todoService.updateTodo(id, writeDto, user.id);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Role, RoleDocument } from 'src/data/schemas/role.schema';
-import { CreateRoleDto } from 'src/dtos/role/create-role.dto';
-import { RoleDto } from 'src/dtos/role/role.dto';
+import { CreateRoleDto } from 'src/common/dtos/role/create-role.dto';
+import { RoleDto } from 'src/common/dtos/role/role.dto';
 
 @Injectable()
 export abstract class RoleRepository {
