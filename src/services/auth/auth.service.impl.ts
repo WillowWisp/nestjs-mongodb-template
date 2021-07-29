@@ -5,6 +5,9 @@ import { UserRepository } from 'src/data/repositories/user/user.repository';
 import { RegisterUserDto } from 'src/common/dtos/user/register-user.dto';
 import { ShortUserDto, UserDto } from 'src/common/dtos/user/user.dto';
 import { AuthService } from './auth.service';
+import * as bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 10;
 
 export class AuthServiceImpl implements AuthService {
   constructor(
@@ -33,7 +36,8 @@ export class AuthServiceImpl implements AuthService {
       return null;
     }
 
-    if (userDoc.password !== password) {
+    const isMatch = await bcrypt.compare(password, userDoc.passwordHash);
+    if (!isMatch) {
       return null;
     }
 
@@ -49,9 +53,11 @@ export class AuthServiceImpl implements AuthService {
       throw new HttpException('Username already taken', 400);
     }
 
+    const passHash = await bcrypt.hash(registerUserDto.password, SALT_ROUNDS);
+
     const createdUserDoc = await this.userRepository.createUser({
       username: registerUserDto.username,
-      password: registerUserDto.password,
+      passwordHash: passHash,
       role: 'user',
     });
 

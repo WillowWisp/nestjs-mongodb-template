@@ -34,7 +34,7 @@ export class TodoRepositoryImpl implements TodoRepository {
     return await this.todoModel.create({
       name: writeDto.name,
       user: userDoc._id,
-    });
+    } as Todo);
   }
 
   async updateTodo(

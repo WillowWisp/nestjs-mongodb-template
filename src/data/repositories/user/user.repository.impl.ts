@@ -13,14 +13,14 @@ export class UserRepositoryImpl implements UserRepository {
 
   async createUser(args: {
     username: string;
-    password: string;
+    passwordHash: string;
     role: Role;
   }): Promise<UserDocument> {
     const createdUserDoc = await this.userModel.create({
       username: args.username,
-      password: args.password,
+      passwordHash: args.passwordHash,
       role: args.role,
-    });
+    } as User);
 
     return createdUserDoc;
   }

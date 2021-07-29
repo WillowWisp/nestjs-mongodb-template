@@ -5,12 +5,4 @@ import { RoleDto } from '../role/role.dto';
 export class RegisterUserDto {
   username: string;
   password: string;
-
-  toEntity(other: { roleId: RoleDocument['_id'] }): User {
-    return {
-      username: this.username,
-      password: this.password,
-      role: other.roleId,
-    };
-  }
 }

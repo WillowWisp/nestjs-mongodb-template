@@ -7,7 +7,7 @@ export abstract class UserRepository {
   abstract getUserByUsername(username: string): Promise<UserDocument | null>;
   abstract createUser(args: {
     username: string;
-    password: string;
+    passwordHash: string;
     role: Role;
   }): Promise<UserDocument>;
 }
