@@ -46,14 +46,6 @@ export class AuthServiceImpl implements AuthService {
   }
 
   async signUp(registerUserDto: RegisterUserDto): Promise<UserDto> {
-    const existUserDoc = await this.userRepository.getUserByUsername(
-      registerUserDto.username,
-    );
-
-    if (existUserDoc != null) {
-      throw new HttpException('Username already taken', 400);
-    }
-
     const passHash = await bcrypt.hash(registerUserDto.password, SALT_ROUNDS);
 
     const createdUserDoc = await this.userRepository.createUser({

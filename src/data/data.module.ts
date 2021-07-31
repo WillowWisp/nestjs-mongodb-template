@@ -14,6 +14,11 @@ import { User, UserSchema } from './schemas/user.schema';
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/shekels-test', {
       useFindAndModify: false,
+      connectionFactory: (connection) => {
+        // Register plugin for all schemas
+        connection.plugin(require('mongoose-autopopulate'));
+        return connection;
+      },
     }),
     MongooseModule.forFeature([
       { name: Todo.name, schema: TodoSchema },

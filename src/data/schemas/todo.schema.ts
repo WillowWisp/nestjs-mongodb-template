@@ -21,6 +21,4 @@ export class Todo {
   user: User;
 }
 
-export const TodoSchema = SchemaFactory.createForClass(Todo).plugin(
-  require('mongoose-autopopulate'),
-);
+export const TodoSchema = SchemaFactory.createForClass(Todo);

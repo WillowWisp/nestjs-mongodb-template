@@ -19,6 +19,4 @@ export class User {
   role: Role;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User).plugin(
-  require('mongoose-autopopulate'),
-);
+export const UserSchema = SchemaFactory.createForClass(User);
