@@ -12,7 +12,7 @@ import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/shekels-test', {
+    MongooseModule.forRoot('mongodb://my-mongo:27017/shekels-test', {
       useFindAndModify: false,
       connectionFactory: (connection) => {
         // Register plugin for all schemas

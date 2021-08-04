@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  my-app:
+    build: .
+    ports:
+      - "3001:3000"
+  my-mongo:
+    image: mongo:latest
+    volumes:
+      - my-mongo-data:/data/db
+    ports:
+      - "27018:27017"
+
+volumes:
+  my-mongo-data:
