@@ -12,14 +12,20 @@ import { User, UserSchema } from './schemas/user.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://my-mongo:27017/shekels-test', {
-      useFindAndModify: false,
-      connectionFactory: (connection) => {
-        // Register plugin for all schemas
-        connection.plugin(require('mongoose-autopopulate'));
-        return connection;
+    MongooseModule.forRoot(
+      // TODO find better way to separate env
+      `mongodb+srv://willow614:${process.env.MONGO_PASS}@shekelstestcluster.r9kgw.mongodb.net/shekels-test?retryWrites=true&w=majority`,
+      // 'mongodb://localhost:27017/shekels-test',
+      // 'mongodb://my-mongo:27017/shekels-test',
+      {
+        useFindAndModify: false,
+        connectionFactory: (connection) => {
+          // Register plugin for all schemas
+          connection.plugin(require('mongoose-autopopulate'));
+          return connection;
+        },
       },
-    }),
+    ),
     MongooseModule.forFeature([
       { name: Todo.name, schema: TodoSchema },
       { name: User.name, schema: UserSchema },

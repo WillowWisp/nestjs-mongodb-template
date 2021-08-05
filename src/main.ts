@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -12,7 +14,7 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  await app.listen(3000);
+  await app.listen(8080);
 }
 bootstrap();
 

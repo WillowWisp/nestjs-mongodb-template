@@ -1,5 +1,11 @@
 FROM node:14-alpine
-WORKDIR /app
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install
+
 COPY . .
-RUN npm install --no-package-lock
-CMD ["npm", "start"]
+
+CMD ["npm", "run", "start"]
